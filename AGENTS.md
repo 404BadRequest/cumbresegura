@@ -1,6 +1,7 @@
 # Reglas para agentes en CumbreSegura
 
 - El producto es un informe Go / No Go. No agregues funciones que no entren en ese flujo.
+- El LLM de producción es OpenAI (`OPENAI_API_KEY`, modelo `OPENAI_MODEL` / `gpt-4o-mini`). El enunciado original pedía Gemini; no reviertas a Gemini sin actualizar `PROMPT_MAESTRO.md`, `README.md` y `docs/alineacion_entrega.md`.
 - El prompt que ejecuta la aplicación es `prompts/sistema_seguridad_montana.md`. Si lo cambias, actualiza `eval/resultados.md` y deja la versión anterior rastreable.
 - No inventes clima, boletines ni perfiles de nieve. Los números salen de Open-Meteo.
 - La nieve se expresa en centímetros, la precipitación en milímetros y el viento en km/h.

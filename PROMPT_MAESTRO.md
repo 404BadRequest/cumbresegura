@@ -1,5 +1,9 @@
 # Prompt maestro — CumbreSegura
 
+## Origen y desviación del enunciado técnico
+
+El enunciado técnico del equipo (`prompt_t_cnico_para_agente_de_c_digo (1).md`) pedía Google Gemini (`gemini-pro`). Ese identificador está retirado y el feedback del Prompt Maestro (6 nov 2026) pidió un modelo vigente. La entrega usa **OpenAI** (`gpt-4o-mini`, `OPENAI_API_KEY` / `OPENAI_MODEL`) porque esa es la clave disponible. El **system prompt** Go / No Go es el mismo contrato de salida; solo cambia el proveedor del LLM. La tabla completa está en `docs/alineacion_entrega.md`.
+
 ## Rol
 
 Actúa como tech lead y desarrollador full-stack. Construye y deja listo para publicar un servicio web de seguridad en alta montaña. El producto se llama CumbreSegura.

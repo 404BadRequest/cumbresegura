@@ -110,8 +110,9 @@ En GitHub, la rama `main` queda protegida: solo entra por pull request y exige l
 
 ## Ajustes respecto del prompt técnico
 
-- El enunciado técnico pedía Gemini. El servicio publicado usa OpenAI (`gpt-4o-mini`, configurable con `OPENAI_MODEL`) porque esa es la clave disponible. El prompt de sistema es el mismo.
+- El enunciado técnico pedía **Gemini** (`gemini-pro`). El servicio publicado usa **OpenAI** (`gpt-4o-mini`, configurable con `OPENAI_MODEL`) porque esa es la clave disponible y el feedback del curso pedía un modelo vigente. El prompt de sistema (tres apartados y veredictos Go / No Go) es el mismo; cambia el proveedor, no el contrato del informe.
 - El clima no es un mock. Open-Meteo no pide clave y el flujo se puede recorrer de punta a punta.
+- La trazabilidad pedido → mejora → entrega está en [docs/alineacion_entrega.md](docs/alineacion_entrega.md).
 
 ## Entrega del curso
 
@@ -120,3 +121,4 @@ En GitHub, la rama `main` queda protegida: solo entra por pull request y exige l
 - Este repositorio incluye README, Dockerfile, `PROMPT_MAESTRO.md`, `AGENTS.md`, `/prompts` y golden set.
 - Video de tres minutos: [docs/video_presentacion.mp4](docs/video_presentacion.mp4). Guion: [docs/guion_video.md](docs/guion_video.md).
 - Ficha de negocio de una página: [docs/ficha_negocio.pdf](docs/ficha_negocio.pdf) ([fuente](docs/ficha_negocio.md)).
+- Alineación con el feedback y el cambio Gemini → OpenAI: [docs/alineacion_entrega.md](docs/alineacion_entrega.md).

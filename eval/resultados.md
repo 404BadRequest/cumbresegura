@@ -37,4 +37,6 @@ La v1 ya obligaba la estructura, el EAWS, el equipo, el horario y la advertencia
 - GS-04 Sin ruta ni nivel. Las dos versiones piden esos datos para una evaluación definitiva. La v2, además, no puede completarlos por su cuenta.
 - GS-05 Viento blanco. El veredicto esperado es No Go. Si la fecha de salida no está en los siete días, la v2 tiene que decir "fuera de la ventana" en lugar de describir ese día.
 
-El resultado esperado de cada entrada está en `golden_set.json`. Una corrida real contra OpenAI queda para cuando `OPENAI_API_KEY` esté configurada: el mismo formulario de la aplicación es el banco de prueba, usando la entrada de cada caso.
+El resultado esperado de cada entrada está en `golden_set.json`. La app publicada en https://cumbresegura.vercel.app usa OpenAI (`gpt-4o-mini`) con ese prompt v2; el formulario es el banco de prueba con la entrada de cada caso.
+
+Nota de proveedor: el enunciado original hablaba de Gemini. La medición v1→v2 es del **texto del system prompt**, independiente del LLM. En producción el proveedor es OpenAI; ver `docs/alineacion_entrega.md`.

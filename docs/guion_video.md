@@ -28,7 +28,7 @@ Cuando aparezca el resultado, recorrer en este orden: la nieve acumulada y la r�
 
 Mostrar el repositorio https://github.com/404BadRequest/cumbresegura, sin entrar en cada archivo.
 
-El agente partió de `PROMPT_MAESTRO.md`: rol, requisitos, restricciones y criterios de aceptación. El prompt del informe está en `prompts/`. La v1 es el enunciado. La v2 le prohíbe inventar boletines y le obliga a decir cuando la fecha cae fuera del pronóstico. `eval/run_golden.py` mide esa mejora: 25 de 30 contra 30 de 30, sobre cinco casos. La clave de OpenAI no está en el repo. Va como secreto en Vercel, con tope de gasto. Docker levanta el mismo servicio que se publica.
+El agente partió de `PROMPT_MAESTRO.md`: rol, requisitos, restricciones y criterios de aceptación. El enunciado técnico pedía Gemini; la entrega usa OpenAI porque la clave disponible es esa y el feedback pedía un modelo vigente. El prompt del informe está en `prompts/`. La v1 es el enunciado. La v2 le prohíbe inventar boletines y le obliga a decir cuando la fecha cae fuera del pronóstico. `eval/run_golden.py` mide esa mejora: 25 de 30 contra 30 de 30, sobre cinco casos. La clave de OpenAI no está en el repo. Va como secreto en Vercel, con tope de gasto. Docker levanta el mismo servicio que se publica.
 
 ## 2:40 a 3:00 — Cierre
 
