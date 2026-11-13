@@ -1,6 +1,8 @@
 # CumbreSegura
 
-Asesor de viabilidad para ascensos de alta montaña. La persona indica cerro, coordenadas, altitud y fecha. La aplicación reúne el clima de los 14 días previos y de los 7 días siguientes, y Gemini redacta un informe con tres apartados y un veredicto: expedición recomendada, recomendada con condicionantes, o no recomendada.
+Asesor de viabilidad para ascensos de alta montaña. Sitio publicado: [https://cumbresegura.vercel.app](https://cumbresegura.vercel.app).
+
+La persona indica cerro, coordenadas, altitud y fecha. La aplicación reúne el clima de los 14 días previos y de los 7 días siguientes, y Gemini redacta un informe con tres apartados y un veredicto: expedición recomendada, recomendada con condicionantes, o no recomendada.
 
 Es una estimación académica a partir de meteorología. No es un boletín de avalanchas ni una autorización para salir.
 
