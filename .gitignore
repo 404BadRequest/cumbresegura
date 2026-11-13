@@ -6,3 +6,6 @@ __pycache__/
 .DS_Store
 .tools/
 .vercel
+docs/video_assets/build/
+docs/video_assets/clips/
+docs/video_assets/audio/*.aiff

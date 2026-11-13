@@ -1,5 +1,7 @@
 # Ficha de negocio — CumbreSegura
 
+**URL pública.** https://cumbresegura.vercel.app
+
 **Cliente.** Montañista, guía o club que decide si un ascenso se hace, se cambia o se suspende. No es un servicio para turismo general ni para pronóstico de ciudad.
 
 **Problema.** La decisión junta nieve reciente, viento, visibilidad y hora de retorno. Esos datos están repartidos y el grupo suele resolverlo por chat, la noche anterior. Un error sale caro y un pronóstico suelto no dice si se sale.

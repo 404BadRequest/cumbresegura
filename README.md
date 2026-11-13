@@ -115,7 +115,8 @@ En GitHub, la rama `main` queda protegida: solo entra por pull request y exige l
 
 ## Entrega del curso
 
-- URL pública, cuando la clave y la plataforma estén configuradas.
-- Este repositorio: README, Dockerfile, `PROMPT_MAESTRO.md`, `AGENTS.md`, `/prompts` y golden set.
-- Guion del video de tres minutos: [docs/guion_video.md](docs/guion_video.md).
-- Ficha de negocio de una página: [docs/ficha_negocio.md](docs/ficha_negocio.md). Para el PDF, ábrela en un visor e imprime en A4.
+- URL pública: [https://cumbresegura.vercel.app](https://cumbresegura.vercel.app).
+- Repositorio: [https://github.com/404BadRequest/cumbresegura](https://github.com/404BadRequest/cumbresegura).
+- Este repositorio incluye README, Dockerfile, `PROMPT_MAESTRO.md`, `AGENTS.md`, `/prompts` y golden set.
+- Video de tres minutos: [docs/video_presentacion.mp4](docs/video_presentacion.mp4). Guion: [docs/guion_video.md](docs/guion_video.md).
+- Ficha de negocio de una página: [docs/ficha_negocio.pdf](docs/ficha_negocio.pdf) ([fuente](docs/ficha_negocio.md)).
