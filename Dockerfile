@@ -4,7 +4,7 @@ WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    GEMINI_MODEL=gemini-flash-latest
+    OPENAI_MODEL=gpt-4o-mini
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

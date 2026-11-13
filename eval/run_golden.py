@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Mide la cobertura de instrucciones de la v1 y la v2 sobre el golden set.
 
-No llama a Gemini y no inventa informes. Comprueba que cada criterio exigido
+No llama al modelo y no inventa informes. Comprueba que cada criterio exigido
 esté escrito en el prompt y prueba el parser de veredicto con textos fijos.
 """
 

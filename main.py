@@ -14,9 +14,7 @@ import httpx
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
-from google import genai
-from google.genai import errors as genai_errors
-from google.genai import types
+from openai import APIConnectionError, APIStatusError, AuthenticationError, OpenAI, RateLimitError
 from pydantic import BaseModel, Field, field_validator
 
 ROOT = Path(__file__).resolve().parent
@@ -30,7 +28,7 @@ DAILY_VARS = (
     "snowfall_sum,wind_speed_10m_max,wind_gusts_10m_max"
 )
 FORECAST_VARS = DAILY_VARS + ",cloud_cover_mean,uv_index_max"
-DEFAULT_MODEL = "gemini-flash-latest"
+DEFAULT_MODEL = "gpt-4o-mini"
 HEADING_RE = re.compile(r"(?m)^\s*(?:\*\*)?\s*([123])\.\s+(.+)$")
 
 logging.basicConfig(level=logging.INFO)
@@ -325,67 +323,67 @@ def build_user_contents(body: AsesoriaRequest, weather: dict) -> str:
     return json.dumps(payload, ensure_ascii=False, indent=2)
 
 
-def _map_gemini_error(exc: Exception) -> AsesoriaError:
-    code = getattr(exc, "code", None)
-    text = str(exc).lower()
-    if code in (401, 403) or "api key" in text or "permission" in text or "unauthenticated" in text:
+def _map_openai_error(exc: Exception) -> AsesoriaError:
+    status = getattr(exc, "status_code", None)
+    if isinstance(exc, AuthenticationError) or status in (401, 403):
         return AsesoriaError(
             401,
             "invalid_api_key",
-            "La clave de Gemini fue rechazada. Revisa GEMINI_API_KEY en el entorno.",
+            "La clave de OpenAI fue rechazada. Revisa OPENAI_API_KEY en el entorno.",
         )
-    if code == 429 or "resource_exhausted" in text or "quota" in text:
+    if isinstance(exc, RateLimitError) or status == 429:
         return AsesoriaError(
             429,
-            "gemini_quota",
-            "La API de Gemini alcanzó su límite de uso. Revisa el tope de gasto o intenta más tarde.",
+            "openai_quota",
+            "La API de OpenAI alcanzó su límite de uso. Revisa el tope de gasto o intenta más tarde.",
         )
-    if "timeout" in text or "deadline" in text or code == 504:
+    if isinstance(exc, APIConnectionError):
         return AsesoriaError(
             504,
-            "gemini_timeout",
-            "Gemini no respondió a tiempo. Intenta de nuevo.",
+            "openai_timeout",
+            "OpenAI no respondió. Intenta de nuevo.",
         )
     logger.exception("Fallo al generar el informe")
     return AsesoriaError(
         502,
-        "gemini_error",
+        "openai_error",
         "No se pudo generar el informe. El servicio de IA no respondió.",
     )
 
 
 def generate_report(contents: str) -> tuple[str, str]:
-    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
     if not api_key:
         raise AsesoriaError(
             503,
             "missing_api_key",
-            "Falta GEMINI_API_KEY. Configúrala como secreto del entorno, nunca dentro del repositorio.",
+            "Falta OPENAI_API_KEY. Configúrala como secreto del entorno, nunca dentro del repositorio.",
         )
-    model = os.environ.get("GEMINI_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
-    client = genai.Client(api_key=api_key)
+    model = os.environ.get("OPENAI_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
+    client = OpenAI(api_key=api_key, timeout=45.0)
     try:
-        response = client.models.generate_content(
+        response = client.chat.completions.create(
             model=model,
-            contents=contents,
-            config=types.GenerateContentConfig(
-                system_instruction=load_system_prompt(),
-                temperature=0.3,
-                max_output_tokens=4096,
-            ),
+            temperature=0.3,
+            max_completion_tokens=4096,
+            messages=[
+                {"role": "system", "content": load_system_prompt()},
+                {"role": "user", "content": contents},
+            ],
         )
     except AsesoriaError:
         raise
-    except genai_errors.APIError as exc:
-        raise _map_gemini_error(exc) from exc
+    except (AuthenticationError, RateLimitError, APIConnectionError, APIStatusError) as exc:
+        raise _map_openai_error(exc) from exc
     except Exception as exc:
-        raise _map_gemini_error(exc) from exc
-    text = (getattr(response, "text", None) or "").strip()
+        raise _map_openai_error(exc) from exc
+    choice = response.choices[0].message
+    text = (choice.content or "").strip()
     if not text:
         raise AsesoriaError(
             502,
             "empty_report",
-            "Gemini respondió sin texto. Intenta de nuevo.",
+            "OpenAI respondió sin texto. Intenta de nuevo.",
         )
     return text, model
 

@@ -26,7 +26,7 @@ Cuando aparezca el resultado, recorrer en este orden: la nieve acumulada y la r�
 
 Mostrar el repositorio, sin entrar en cada archivo.
 
-El agente partió de `PROMPT_MAESTRO.md`: rol, requisitos, restricciones y criterios de aceptación. El prompt del informe está en `prompts/`. La v1 es el enunciado. La v2 le prohíbe inventar boletines y le obliga a decir cuando la fecha cae fuera del pronóstico. `eval/run_golden.py` mide esa mejora: 25 de 30 contra 30 de 30, sobre cinco casos. La clave de Gemini no está en el repo. Va como secreto, con tope de gasto. Docker levanta el mismo servicio que se publica.
+El agente partió de `PROMPT_MAESTRO.md`: rol, requisitos, restricciones y criterios de aceptación. El prompt del informe está en `prompts/`. La v1 es el enunciado. La v2 le prohíbe inventar boletines y le obliga a decir cuando la fecha cae fuera del pronóstico. `eval/run_golden.py` mide esa mejora: 25 de 30 contra 30 de 30, sobre cinco casos. La clave de OpenAI no está en el repo. Va como secreto, con tope de gasto. Docker levanta el mismo servicio que se publica.
 
 ## 2:40 a 3:00 — Cierre
 

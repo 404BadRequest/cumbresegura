@@ -2,7 +2,7 @@
 
 Asesor de viabilidad para ascensos de alta montaña. Sitio publicado: [https://cumbresegura.vercel.app](https://cumbresegura.vercel.app).
 
-La persona indica cerro, coordenadas, altitud y fecha. La aplicación reúne el clima de los 14 días previos y de los 7 días siguientes, y Gemini redacta un informe con tres apartados y un veredicto: expedición recomendada, recomendada con condicionantes, o no recomendada.
+La persona indica cerro, coordenadas, altitud y fecha. La aplicación reúne el clima de los 14 días previos y de los 7 días siguientes, y OpenAI redacta un informe con tres apartados y un veredicto: expedición recomendada, recomendada con condicionantes, o no recomendada.
 
 Es una estimación académica a partir de meteorología. No es un boletín de avalanchas ni una autorización para salir.
 
@@ -28,19 +28,19 @@ Atajos del formulario: **Usar Cerro El Plomo**, **Usar Aconcagua** y **Completar
 index.html  --POST /api/asesoria-->  FastAPI (main.py)
                                       |-- Open-Meteo archivo (14 días)
                                       |-- Open-Meteo pronóstico (7 días; si está saturado, usa la corrida previa)
-                                      '-- Gemini, system prompt v2
+                                      '-- OpenAI, system prompt v2
 ```
 
 Archivos de ejecución:
 
-- `main.py` — API, clima, Gemini y parser del informe.
+- `main.py` — API, clima, OpenAI y parser del informe.
 - `index.html` — dashboard.
 - `prompts/sistema_seguridad_montana.md` — prompt v2, el que usa el servidor.
 - `prompts/v1_sistema_seguridad_montana.md` — enunciado original, solo para comparar.
 - `eval/golden_set.json` — cinco casos con entrada y resultado esperado.
 - `eval/resultados.md` — mejora medida de la v1 a la v2.
 
-`GET /api/health` responde sin llamar a Gemini.
+`GET /api/health` responde sin llamar a OpenAI.
 
 ## Arranque local
 
@@ -48,7 +48,7 @@ Con Docker:
 
 ```bash
 cp .env.example .env
-# Edita .env y pega tu GEMINI_API_KEY. No la subas al repositorio.
+# Edita .env y pega tu OPENAI_API_KEY. No la subas al repositorio.
 docker compose up --build
 ```
 
@@ -60,11 +60,11 @@ Sin Docker, con Python 3.12:
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-export GEMINI_API_KEY="tu-clave"
+export OPENAI_API_KEY="tu-clave"
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-Sin clave, el servicio igual arranca. La consulta trae el clima y explica que falta `GEMINI_API_KEY`.
+Sin clave, el servicio igual arranca. La consulta trae el clima y explica que falta `OPENAI_API_KEY`.
 
 Comprueba la rúbrica del prompt:
 
@@ -74,26 +74,26 @@ python eval/run_golden.py
 
 ## Secretos
 
-`GEMINI_API_KEY` vive en el entorno o en el secreto de la plataforma. `GEMINI_MODEL` es opcional y parte en `gemini-flash-latest`. En la nube hay que configurar un límite de gasto en la API de Google.
+`OPENAI_API_KEY` vive en el entorno o en el secreto de la plataforma. `OPENAI_MODEL` es opcional y parte en `gpt-4o-mini`. En la nube hay que configurar un límite de gasto en la API de OpenAI.
 
 ## Despliegue
 
 Vercel detecta FastAPI porque `main.py` expone `app`. `vercel.json` solo alarga la función a 60 segundos, porque el informe tarda más que un request corto.
 
-Secretos del repositorio para el workflow: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`. También `GEMINI_API_KEY` en el proyecto de Vercel, no en GitHub.
+Secretos del repositorio para el workflow: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`. También `OPENAI_API_KEY` en el proyecto de Vercel, no en GitHub.
 
 ```bash
 npm install --global vercel
 vercel link
-vercel env add GEMINI_API_KEY production
+vercel env add OPENAI_API_KEY production
 vercel --prod
 ```
 
-Si el plan de Vercel corta la función antes de que Gemini responda, el mismo `Dockerfile` sirve en Fly.io o Cloud Run:
+Si el plan de Vercel corta la función antes de que OpenAI responda, el mismo `Dockerfile` sirve en Fly.io o Cloud Run:
 
 ```bash
 fly launch
-fly secrets set GEMINI_API_KEY="tu-clave"
+fly secrets set OPENAI_API_KEY="tu-clave"
 fly deploy
 ```
 
@@ -110,7 +110,7 @@ En GitHub, la rama `main` queda protegida: solo entra por pull request y exige l
 
 ## Ajustes respecto del prompt técnico
 
-- `gemini-pro` ya no es el modelo del SDK actual. Se usa `google-genai` y `gemini-flash-latest`, que es el alias de la documentación oficial. Se puede cambiar con `GEMINI_MODEL`.
+- El enunciado técnico pedía Gemini. El servicio publicado usa OpenAI (`gpt-4o-mini`, configurable con `OPENAI_MODEL`) porque esa es la clave disponible. El prompt de sistema es el mismo.
 - El clima no es un mock. Open-Meteo no pide clave y el flujo se puede recorrer de punta a punta.
 
 ## Entrega del curso
