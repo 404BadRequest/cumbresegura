@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CumbreSegura — Viabilidad de ascenso</title>
+  <style>
+    :root {
+      --sidebar: #2c343a;
+      --sidebar-text: #d5dde3;
+      --sidebar-muted: #8e9aa3;
+      --sidebar-active: #3d8bfd;
+      --topbar: #ffffff;
+      --page: #eef2f6;
+      --card: #ffffff;
+      --ink: #243037;
+      --muted: #5c6b76;
+      --line: #e1e7ee;
+      --accent: #1f6f9f;
+      --accent-ink: #ffffff;
+      --go: #146c43;
+      --go-bg: #e8f6ee;
+      --cond: #8a5a08;
+      --cond-bg: #fbf4e4;
+      --nogo: #9d2430;
+      --nogo-bg: #fdecee;
+      --unknown: #3e4c57;
+      --unknown-bg: #eef2f5;
+      --warn-bg: #fbf6ea;
+      --warn-ink: #6b4e12;
+      --danger-bg: #fdecee;
+      --danger-ink: #8d2430;
+      --shadow: 0 1px 2px rgba(28, 39, 49, 0.05);
+      --sidebar-width: 248px;
+      --font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--page);
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .skip {
+      position: absolute;
+      left: 12px;
+      top: -40px;
+      background: var(--ink);
+      color: white;
+      padding: 8px 12px;
+      z-index: 5;
+    }
+    .skip:focus { top: 12px; }
+
+    .app { min-height: 100vh; }
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: var(--sidebar-width);
+      background: var(--sidebar);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      padding: 22px 16px 18px;
+    }
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 0 8px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .brand svg { width: 36px; height: 36px; color: #8ec8f8; flex: none; }
+    .brand strong { display: block; letter-spacing: 0.04em; font-size: 14px; }
+    .brand span { color: var(--sidebar-muted); font-size: 13px; }
+    .sidebar nav { display: flex; flex-direction: column; gap: 4px; margin-top: 18px; }
+    .sidebar a {
+      color: var(--sidebar-text);
+      text-decoration: none;
+      border-radius: 4px;
+      padding: 10px 12px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sidebar a:hover { background: rgba(255, 255, 255, 0.06); }
+    .sidebar a[aria-current="page"] {
+      background: rgba(61, 139, 253, 0.16);
+      box-shadow: inset 3px 0 0 var(--sidebar-active);
+    }
+    .sidebar a svg { width: 18px; height: 18px; flex: none; }
+    .sidebar-note {
+      margin-top: auto;
+      color: var(--sidebar-muted);
+      font-size: 13px;
+      padding: 12px 8px 0;
+    }
+    .workspace { margin-left: var(--sidebar-width); min-width: 0; }
+    .topbar {
+      background: var(--topbar);
+      border-bottom: 1px solid var(--line);
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 28px;
+    }
+    .topbar p { margin: 0; }
+    .eyebrow {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .topbar h1 { margin: 0; font-size: 20px; font-weight: 600; }
+    .disclaimer {
+      margin: 0;
+      background: var(--warn-bg);
+      color: var(--warn-ink);
+      padding: 10px 28px;
+      border-bottom: 1px solid #eadcba;
+    }
+    .page {
+      padding: 24px 28px 48px;
+      display: grid;
+      gap: 18px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    .card h2 { margin: 0 0 4px; font-size: 18px; }
+    .lede { margin: 0 0 16px; color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 14px 16px;
+    }
+    .span-2 { grid-column: span 2; }
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    .hint { display: block; margin-top: 6px; color: var(--muted); font-size: 14px; font-weight: 400; }
+    input, select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #c9d3dc;
+      border-radius: 4px;
+      background: white;
+      color: var(--ink);
+      padding: 8px 10px;
+      font-weight: 400;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    button {
+      min-height: 44px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    button:disabled { cursor: wait; opacity: 0.7; }
+    .primary { background: var(--accent); color: var(--accent-ink); }
+    .primary:hover { background: #185b84; }
+    .ghost {
+      background: white;
+      color: var(--ink);
+      border-color: #c9d3dc;
+    }
+    .ghost:hover { background: #f7f9fb; }
+    .status { min-height: 1.5em; margin: 12px 0 0; color: var(--muted); }
+    .alert {
+      border-radius: 4px;
+      padding: 12px 14px;
+      margin: 0 0 16px;
+    }
+    .alert strong { display: block; }
+    .alert-danger { background: var(--danger-bg); color: var(--danger-ink); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      padding: 12px 14px;
+      background: #fbfcfd;
+    }
+    .stat span { display: block; color: var(--muted); font-size: 13px; }
+    .stat strong { font-size: 22px; font-variant-numeric: tabular-nums; }
+    html, body { max-width: 100%; overflow-x: hidden; }
+    .workspace, .page, .card, .grid, .table-wrap { min-width: 0; max-width: 100%; }
+    .table-wrap { overflow-x: auto; margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td {
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    th { color: var(--muted); font-size: 13px; font-weight: 600; }
+    .block-title { margin: 18px 0 0; font-size: 16px; }
+    .verdict {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      border-radius: 4px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+    .verdict p { margin: 4px 0 0; }
+    .verdict b { font-size: 13px; letter-spacing: 0.08em; }
+    .verdict.go { background: var(--go-bg); color: var(--go); }
+    .verdict.conditional { background: var(--cond-bg); color: var(--cond); }
+    .verdict.nogo { background: var(--nogo-bg); color: var(--nogo); }
+    .verdict.unknown { background: var(--unknown-bg); color: var(--unknown); }
+    .sections { display: grid; gap: 12px; }
+    .section-card { border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; }
+    .section-card h3 { margin: 0 0 8px; font-size: 16px; }
+    .section-card p { margin: 0 0 8px; }
+    .section-card p:last-child { margin-bottom: 0; }
+    .meta { margin: 14px 0 0; color: var(--muted); font-size: 14px; }
+    .empty {
+      border: 1px dashed #c9d3dc;
+      border-radius: 4px;
+      padding: 18px;
+      color: var(--muted);
+      background: #fbfcfd;
+    }
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: auto; }
+      .workspace { margin-left: 0; }
+      .sidebar nav { flex-direction: row; overflow-x: auto; }
+      .sidebar-note { margin-top: 16px; }
+      .brand { border-bottom: 0; padding-bottom: 8px; }
+      .grid, .stats { grid-template-columns: 1fr 1fr; }
+      .span-2, .span-4, .span-6 { grid-column: span 2; }
+      .page, .topbar, .disclaimer { padding-left: 16px; padding-right: 16px; }
+    }
+    @media (max-width: 640px) {
+      .stats, .grid { grid-template-columns: 1fr; }
+      .span-2, .span-4, .span-6 { grid-column: span 1; }
+      .verdict { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#consulta">Saltar al formulario</a>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M2 25 L11 11 L16 17 L22 7 L30 25" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <div>
+          <strong>CUMBRESEGURA</strong>
+          <span>Asesor de ascenso</span>
+        </div>
+      </div>
+      <nav aria-label="Secciones">
+        <a href="#consulta" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+          Consulta
+        </a>
+        <a href="#clima">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 16a4 4 0 0 1 .4-7.98A5 5 0 0 1 16 8a3.5 3.5 0 0 1 .5 7H6z"/></svg>
+          Clima
+        </a>
+        <a href="#informe">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2 4 6v6c0 5 3.4 8.4 8 10 4.6-1.6 8-5 8-10V6l-8-4z"/></svg>
+          Informe
+        </a>
+      </nav>
+      <p class="sidebar-note">Apoyo académico. No reemplaza un boletín oficial de avalanchas.</p>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Alta montaña</p>
+          <h1>Viabilidad de ascenso</h1>
+        </div>
+        <p id="today" class="eyebrow"></p>
+      </header>
+      <p class="disclaimer">Este informe estima el riesgo con el clima de Open-Meteo. No es un boletín de avalanchas ni una autorización para salir.</p>
+
+      <div class="page">
+        <section class="card" id="consulta" aria-labelledby="consulta-title">
+          <h2 id="consulta-title">Datos del ascenso</h2>
+          <p class="lede">Cerro, coordenadas, altitud y fecha. La ruta y el nivel del grupo afinan el veredicto; si faltan, el informe lo dice.</p>
+          <form id="form">
+            <div class="grid">
+              <div class="span-4">
+                <label for="mountain">Cerro o referencia
+                  <input id="mountain" name="mountain" required maxlength="120" value="Cerro El Plomo" autocomplete="off">
+                </label>
+              </div>
+              <div class="span-2">
+                <label for="target_date">Fecha objetivo
+                  <input id="target_date" name="target_date" type="date" required value="2026-11-15">
+                </label>
+              </div>
+              <div class="span-2">
+                <label for="latitude">Latitud
+                  <input id="latitude" name="latitude" type="number" required min="-90" max="90" step="0.0001" value="-33.237" inputmode="decimal">
+                </label>
+              </div>
+              <div class="span-2">
+                <label for="longitude">Longitud
+                  <input id="longitude" name="longitude" type="number" required min="-180" max="180" step="0.0001" value="-70.214" inputmode="decimal">
+                </label>
+              </div>
+              <div class="span-2">
+                <label for="altitude_m">Altitud (m)
+                  <input id="altitude_m" name="altitude_m" type="number" required min="0" max="9000" step="1" value="5424" inputmode="numeric">
+                </label>
+              </div>
+              <div class="span-4">
+                <label for="route">Ruta
+                  <input id="route" name="route" maxlength="300" placeholder="Arista, glaciar o vía concreta" autocomplete="off">
+                  <span class="hint">Opcional. Sin ruta, el informe no cierra la evaluación.</span>
+                </label>
+              </div>
+              <div class="span-2">
+                <label for="group_level">Nivel del grupo
+                  <select id="group_level" name="group_level">
+                    <option value="">Sin especificar</option>
+                    <option>Principiante</option>
+                    <option>Intermedio</option>
+                    <option>Avanzado</option>
+                  </select>
+                </label>
+              </div>
+              <div class="span-6 actions">
+                <button class="primary" id="submit" type="submit">Evaluar ascenso</button>
+                <button class="ghost" type="button" id="fill-plomo">Usar Cerro El Plomo</button>
+                <button class="ghost" type="button" id="fill-aconcagua">Usar Aconcagua</button>
+                <button class="ghost" type="button" id="fill-route">Completar ruta de ejemplo</button>
+              </div>
+            </div>
+          </form>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="card" id="clima" aria-labelledby="clima-title">
+          <h2 id="clima-title">Clima usado en el informe</h2>
+          <p class="lede">Diagnóstico de los 14 días previos y pronóstico de los 7 días siguientes a la consulta.</p>
+          <div id="clima-body">
+            <div class="empty">Las series aparecen aquí después de evaluar un ascenso.</div>
+          </div>
+        </section>
+
+        <section class="card" id="informe" aria-labelledby="informe-title">
+          <h2 id="informe-title">Informe de viabilidad</h2>
+          <p class="lede">Tres apartados y un criterio Go, condicionado o No Go.</p>
+          <div id="alert"></div>
+          <div id="informe-body">
+            <div class="empty">El veredicto aparece aquí. Revisa nieve, riesgo y hora de retorno antes de decidir.</div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("form");
+    const statusNode = document.getElementById("status");
+    const submitButton = document.getElementById("submit");
+    const climaBody = document.getElementById("clima-body");
+    const informeBody = document.getElementById("informe-body");
+    const alertNode = document.getElementById("alert");
+    const todayNode = document.getElementById("today");
+
+    todayNode.textContent = new Intl.DateTimeFormat("es-CL", {
+      dateStyle: "full"
+    }).format(new Date());
+
+    const dateInput = document.getElementById("target_date");
+    const todayIso = new Date().toISOString().slice(0, 10);
+    dateInput.min = todayIso;
+
+    function setMountain(name, lat, lon, alt) {
+      document.getElementById("mountain").value = name;
+      document.getElementById("latitude").value = lat;
+      document.getElementById("longitude").value = lon;
+      document.getElementById("altitude_m").value = alt;
+    }
+
+    document.getElementById("fill-plomo").addEventListener("click", function () {
+      setMountain("Cerro El Plomo", "-33.237", "-70.214", "5424");
+    });
+    document.getElementById("fill-aconcagua").addEventListener("click", function () {
+      setMountain("Aconcagua", "-32.653", "-70.011", "6961");
+    });
+    document.getElementById("fill-route").addEventListener("click", function () {
+      document.getElementById("route").value = "Arista noroeste desde el campamento de altura";
+      document.getElementById("group_level").value = "Intermedio";
+    });
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, function (char) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char];
+      });
+    }
+
+    function formatBody(value) {
+      const safe = escapeHtml(value).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      return safe.split(/\n{2,}/).map(function (paragraph) {
+        return "<p>" + paragraph.replace(/\n/g, "<br>") + "</p>";
+      }).join("");
+    }
+
+    function formatNumber(value, digits) {
+      if (value === null || value === undefined || value === "") return "—";
+      return new Intl.NumberFormat("es-CL", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      }).format(value);
+    }
+
+    function formatDate(iso) {
+      const parts = iso.split("-").map(Number);
+      return new Intl.DateTimeFormat("es-CL", {
+        day: "numeric",
+        month: "short",
+        timeZone: "UTC"
+      }).format(new Date(Date.UTC(parts[0], parts[1] - 1, parts[2])));
+    }
+
+    function stat(label, value) {
+      return "<div class=\"stat\"><span>" + escapeHtml(label) + "</span><strong>" + value + "</strong></div>";
+    }
+
+    function table(rows, withSky) {
+      const head = "<tr><th>Día</th><th>Tiempo</th><th>Máx °C</th><th>Mín °C</th><th>Lluvia mm</th><th>Nieve cm</th><th>Viento</th><th>Ráfaga</th>"
+        + (withSky ? "<th>Nubes %</th><th>UV</th>" : "") + "</tr>";
+      const body = rows.map(function (row) {
+        return "<tr><td>" + escapeHtml(formatDate(row.date)) + "</td><td>" + escapeHtml(row.weather_label)
+          + "</td><td>" + formatNumber(row.temp_max_c, 1)
+          + "</td><td>" + formatNumber(row.temp_min_c, 1)
+          + "</td><td>" + formatNumber(row.precipitation_mm, 1)
+          + "</td><td>" + formatNumber(row.snowfall_cm, 1)
+          + "</td><td>" + formatNumber(row.wind_max_kmh, 0)
+          + "</td><td>" + formatNumber(row.gust_max_kmh, 0)
+          + (withSky ? "<td>" + formatNumber(row.cloud_cover_pct, 0) + "</td><td>" + formatNumber(row.uv_index, 1) + "</td>" : "")
+          + "</tr>";
+      }).join("");
+      return "<div class=\"table-wrap\"><table>" + head + body + "</table></div>";
+    }
+
+    function renderWeather(weather) {
+      const summary = weather.summary;
+      climaBody.innerHTML = ""
+        + "<div class=\"stats\">"
+        + stat("Nieve 14 días", formatNumber(summary.historical_snowfall_cm, 1) + " cm")
+        + stat("Ráfaga máxima previa", formatNumber(summary.historical_max_gust_kmh, 0) + " km/h")
+        + stat("Nieve prevista", formatNumber(summary.forecast_snowfall_cm, 1) + " cm")
+        + stat("Mínima prevista", formatNumber(summary.forecast_min_temp_c, 1) + " °C")
+        + "</div>"
+        + "<h3 class=\"block-title\">Últimas dos semanas</h3>"
+        + table(weather.historical, false)
+        + "<h3 class=\"block-title\">Próximos siete días</h3>"
+        + (weather.forecast_source && weather.forecast_source.indexOf("corrida previa") !== -1
+          ? "<p class=\"lede\">Pronóstico de una corrida previa de Open-Meteo: el servicio principal estaba saturado.</p>"
+          : "")
+        + table(weather.forecast, true);
+    }
+
+    function renderReport(data) {
+      const verdict = data.verdict || "unknown";
+      const sections = (data.sections || []).map(function (section) {
+        return "<article class=\"section-card\"><h3>" + section.number + ". " + escapeHtml(section.title)
+          + "</h3>" + formatBody(section.body || "") + "</article>";
+      }).join("");
+      const meta = data.meta
+        ? "<p class=\"meta\">Modelo " + escapeHtml(data.meta.model) + " · clima Open-Meteo · " + escapeHtml(data.meta.generated_at) + "</p>"
+        : "";
+      informeBody.innerHTML = "<div class=\"verdict " + verdict + "\"><div><b>" + escapeHtml(verdict.toUpperCase())
+        + "</b><p>" + escapeHtml(data.verdict_label || "Veredicto no identificado") + "</p></div></div>"
+        + "<div class=\"sections\">" + sections + "</div>" + meta;
+    }
+
+    function showError(message) {
+      alertNode.innerHTML = "<div class=\"alert alert-danger\" role=\"alert\"><strong>No se completó el informe</strong>"
+        + escapeHtml(message) + "</div>";
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      alertNode.innerHTML = "";
+      informeBody.innerHTML = "<div class=\"empty\">Redactando el informe con el clima de las dos últimas semanas y de la semana que viene.</div>";
+      climaBody.innerHTML = "<div class=\"empty\">Consultando Open-Meteo…</div>";
+      statusNode.textContent = "Consultando el clima y redactando el informe.";
+      submitButton.disabled = true;
+
+      const payload = {
+        mountain: document.getElementById("mountain").value.trim(),
+        latitude: Number(document.getElementById("latitude").value),
+        longitude: Number(document.getElementById("longitude").value),
+        altitude_m: Number(document.getElementById("altitude_m").value),
+        target_date: dateInput.value,
+        route: document.getElementById("route").value.trim(),
+        group_level: document.getElementById("group_level").value
+      };
+
+      try {
+        const response = await fetch("/api/asesoria", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (data.weather) renderWeather(data.weather);
+        if (!response.ok) {
+          const message = data.error && data.error.message
+            ? data.error.message
+            : "El servidor no pudo completar la evaluación.";
+          showError(message);
+          statusNode.textContent = message;
+          if (!data.weather) {
+            climaBody.innerHTML = "<div class=\"empty\">No hay series de clima para esta consulta.</div>";
+          }
+          informeBody.innerHTML = "<div class=\"empty\">Sin veredicto. Corrige el aviso y vuelve a evaluar.</div>";
+          return;
+        }
+        renderReport(data);
+        statusNode.textContent = "Informe listo.";
+        document.getElementById("informe").scrollIntoView({ block: "start" });
+      } catch (error) {
+        showError("No hay conexión con el servidor. Comprueba que la aplicación esté en marcha.");
+        climaBody.innerHTML = "<div class=\"empty\">No hay series de clima para esta consulta.</div>";
+        informeBody.innerHTML = "<div class=\"empty\">Sin veredicto.</div>";
+        statusNode.textContent = "Sin conexión con el servidor.";
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

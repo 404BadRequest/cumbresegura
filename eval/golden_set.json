@@ -1,0 +1,130 @@
+{
+  "product": "CumbreSegura",
+  "note": "Cada caso fija la entrada y el resultado esperado. La medición v1 contra v2 está en resultados.md y se recalcula con run_golden.py. No son transcripciones inventadas del modelo.",
+  "cases": [
+    {
+      "id": "GS-01",
+      "name": "Ventana estable",
+      "input": {
+        "mountain": "Cerro El Plomo",
+        "latitude": -33.237,
+        "longitude": -70.214,
+        "altitude_m": 5424,
+        "target_date": "2026-11-15",
+        "route": "Arista noroeste desde el campamento de altura",
+        "group_level": "Intermedio"
+      },
+      "weather_fixture": {
+        "historical_snowfall_cm": 0,
+        "historical_max_gust_kmh": 28,
+        "forecast_snowfall_cm": 0,
+        "forecast_max_gust_kmh": 25,
+        "forecast_min_temp_c": -6,
+        "forecast_max_cloud_pct": 20
+      },
+      "expected": {
+        "verdict": "go",
+        "summary": "Sin nieve reciente y con viento débil, la progresión es viable si el grupo cumple el equipo mínimo de la ruta.",
+        "must_mention": ["nivel EAWS", "ventana horaria", "hora límite de retorno", "equipamiento"]
+      }
+    },
+    {
+      "id": "GS-02",
+      "name": "Nevada reciente y viento",
+      "input": {
+        "mountain": "Cerro El Plomo",
+        "latitude": -33.237,
+        "longitude": -70.214,
+        "altitude_m": 5424,
+        "target_date": "2026-11-15",
+        "route": "Cara oeste",
+        "group_level": "Avanzado"
+      },
+      "weather_fixture": {
+        "historical_snowfall_cm": 45,
+        "historical_max_gust_kmh": 95,
+        "historical_snow_days": 4,
+        "forecast_snowfall_cm": 18,
+        "forecast_max_gust_kmh": 80
+      },
+      "expected": {
+        "verdict": "nogo",
+        "summary": "Nieve reciente transportada por viento fuerte: el problema principal esperable es placa de viento y el veredicto es no salir.",
+        "must_mention": ["placa de viento", "EAWS", "No Go", "aborto"]
+      }
+    },
+    {
+      "id": "GS-03",
+      "name": "Terreno glaciar",
+      "input": {
+        "mountain": "Aconcagua",
+        "latitude": -32.653,
+        "longitude": -70.011,
+        "altitude_m": 6961,
+        "target_date": "2026-11-16",
+        "route": "Glaciar de los Polacos, con grietas",
+        "group_level": "Avanzado"
+      },
+      "weather_fixture": {
+        "historical_snowfall_cm": 2,
+        "historical_min_temp_c": -18,
+        "forecast_snowfall_cm": 1,
+        "forecast_max_gust_kmh": 35,
+        "forecast_min_temp_c": -20,
+        "forecast_max_cloud_pct": 40
+      },
+      "expected": {
+        "verdict": "conditional",
+        "summary": "Poca nieve nueva y viento moderado, pero la ruta es glaciar: crampones, piolet y equipo de autorrescate en grietas, con horario acotado.",
+        "must_mention": ["crampones", "piolet", "grietas", "condicionantes"]
+      }
+    },
+    {
+      "id": "GS-04",
+      "name": "Sin ruta ni nivel del grupo",
+      "input": {
+        "mountain": "Volcán Villarrica",
+        "latitude": -39.42,
+        "longitude": -71.93,
+        "altitude_m": 2847,
+        "target_date": "2026-11-15",
+        "route": null,
+        "group_level": null
+      },
+      "weather_fixture": {
+        "historical_snowfall_cm": 5,
+        "forecast_snowfall_cm": 2,
+        "forecast_max_gust_kmh": 40
+      },
+      "expected": {
+        "verdict": "conditional",
+        "summary": "Puede haber una lectura meteorológica, pero el informe debe pedir la ruta precisa y el nivel técnico antes de dar una evaluación definitiva.",
+        "must_mention": ["ruta", "nivel técnico", "evaluación definitiva"]
+      }
+    },
+    {
+      "id": "GS-05",
+      "name": "Viento blanco",
+      "input": {
+        "mountain": "Cerro Castillo",
+        "latitude": -46.06,
+        "longitude": -72.15,
+        "altitude_m": 2675,
+        "target_date": "2026-11-14",
+        "route": "Filo oeste",
+        "group_level": "Intermedio"
+      },
+      "weather_fixture": {
+        "forecast_snowfall_cm": 25,
+        "forecast_max_gust_kmh": 110,
+        "forecast_max_cloud_pct": 100,
+        "forecast_days_with_gust_at_least_70": 3
+      },
+      "expected": {
+        "verdict": "nogo",
+        "summary": "Ráfagas sobre 100 km/h, nieve y cielo cubierto: visibilidad insuficiente. El veredicto es abortar y la hora de retorno es inmediata.",
+        "must_mention": ["viento blanco", "visibilidad", "No Go", "hora límite de retorno"]
+      }
+    }
+  ]
+}

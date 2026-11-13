@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Ficha de negocio — CumbreSegura</title>
+  <style>
+    @page { size: A4; margin: 14mm 16mm; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #243037;
+      font-size: 11.5pt;
+      line-height: 1.4;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 3px solid #1f6f9f;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+    h1 { font-size: 22pt; margin: 0; letter-spacing: 0.02em; }
+    .kicker { margin: 0 0 2px; color: #1f6f9f; font-size: 9pt; letter-spacing: 0.12em; text-transform: uppercase; }
+    .meta { margin: 0; color: #5c6b76; font-size: 9.5pt; text-align: right; }
+    h2 { font-size: 11pt; margin: 12px 0 3px; color: #1f6f9f; }
+    p { margin: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #e1e7ee; vertical-align: top; }
+    th { width: 28%; color: #5c6b76; font-weight: 600; font-size: 10pt; }
+    footer {
+      margin-top: 14px;
+      padding-top: 8px;
+      border-top: 1px solid #e1e7ee;
+      color: #6b4e12;
+      background: #fbf6ea;
+      padding: 8px 10px;
+      font-size: 10pt;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <p class="kicker">Ficha de negocio</p>
+      <h1>CumbreSegura</h1>
+    </div>
+    <p class="meta">Proyecto final<br>Advanced Prompt Engineering<br>Universidad Adolfo Ibáñez</p>
+  </header>
+
+  <h2>Cliente</h2>
+  <p>Montañista, guía o club que decide si un ascenso se hace, se cambia o se suspende. El servicio no es para turismo general ni para el pronóstico de una ciudad.</p>
+
+  <h2>Problema</h2>
+  <p>La decisión junta nieve reciente, viento, visibilidad y hora de retorno. Esos datos están repartidos y el grupo suele resolverlo por chat, la noche anterior. Un error sale caro, y un pronóstico suelto no dice si se sale.</p>
+
+  <h2>Propuesta de valor</h2>
+  <p>CumbreSegura arma un informe de una sola lectura: clima de los 14 días previos, pronóstico de 7 días y un veredicto Go, condicionado o No Go, con el equipo mínimo y la hora de retorno. La IA es el producto. Sin ese informe no hay nada que cobrar.</p>
+
+  <h2>Modelo de ingresos</h2>
+  <table>
+    <tr><th>Prueba</th><td>3 consultas gratis al mes.</td></tr>
+    <tr><th>Plan guía</th><td>19 USD al mes. Informes para su cartera de salidas.</td></tr>
+    <tr><th>Plan club</th><td>49 USD al mes. Varias cuentas y el mismo criterio para todo el grupo.</td></tr>
+  </table>
+  <p style="margin-top:6px">El precio se cobra por la decisión escrita, no por el acceso al clima, que sigue siendo público.</p>
+
+  <h2>Costo mensual de operar la beta</h2>
+  <table>
+    <tr><th>Open-Meteo</th><td>0 USD.</td></tr>
+    <tr><th>Gemini Flash</th><td>8 a 15 USD para unas 200 consultas.</td></tr>
+    <tr><th>Hosting</th><td>Plan gratuito de Vercel, o cerca de 5 USD en Fly.io o Cloud Run si la función se corta.</td></tr>
+    <tr><th>Dominio</th><td>Cerca de 1 USD, prorrateado.</td></tr>
+    <tr><th>Total</th><td>10 a 25 USD al mes mientras el uso siga en esa beta. La clave de la API lleva un tope de gasto.</td></tr>
+  </table>
+
+  <footer>El informe es una estimación meteorológica. No reemplaza el boletín de avalanchas ni el juicio de quien va a terreno.</footer>
+</body>
+</html>
